@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AES Encryption / Decryption</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container">
+
+    <!-- ================= HEADING ================= -->
+    <h1>AES Encryption / Decryption</h1>
+
+    <p class="intro-text">
+        AES (Advanced Encryption Standard) is a symmetric encryption algorithm
+        where the same secret key is used for both encryption and decryption.
+    </p>
+
+    <!-- ================= INSTRUCTIONS ================= -->
+    <div class="card">
+        <h2>How to Perform AES Encryption and Decryption</h2>
+        <ol style="margin-left: 20px; font-size: 16px;">
+            <li>Enter the plaintext message to encrypt or ciphertext to decrypt.</li>
+            <li>Enter a secret key (must be the same for encryption and decryption).</li>
+            <li>Click <b>Encrypt</b> to convert plaintext into ciphertext.</li>
+            <li>Click <b>Decrypt</b> to convert ciphertext back into plaintext.</li>
+        </ol>
+    </div>
+
+    <!-- ================= FORM ================= -->
+    <div class="card" style="margin-top: 30px;">
+        <form method="POST">
+
+            <label>Enter Plain Text / Cipher Text:</label>
+            <textarea name="text" required></textarea>
+
+            <label>Enter Secret Key:</label>
+            <input type="password" name="key" required>
+
+            <!-- ================= BIG BUTTONS ================= -->
+            <div style="display: flex; gap: 20px; margin-top: 20px;">
+                <button type="submit" name="action" value="encrypt" class="big-btn">
+                    Encrypt
+                </button>
+                <button type="submit" name="action" value="decrypt" class="big-btn">
+                    Decrypt
+                </button>
+            </div>
+
+        </form>
+
+        {% if result %}
+       <div class="result">
+    <b>Output Result</b>
+    <hr style="margin: 10px 0;">
+    {{ result }}
+</div>
+
+        {% endif %}
+    </div>
+
+    <!-- ================= BACK ================= -->
+    <div style="text-align: center; margin-top: 40px;">
+        <a href="/demo" class="btn">⬅ Back to Demonstrations</a>
+    </div>
+
+</div>
+
+</body>
+</html>

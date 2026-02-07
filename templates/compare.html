@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Comparative Analysis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Heading -->
+    <h1>Comparative Analysis of Cryptographic Algorithms</h1>
+    <p class="intro-text">
+        This section provides a detailed comparison of AES, RSA, and SHA-256
+        based on their characteristics, security features, performance, and
+        real-world applications.
+    </p>
+
+    <!-- ================= TABLE ================= -->
+    <div class="card" style="overflow-x:auto; padding: 20px 30px;">
+        <table style="width:100%; border-collapse: collapse; text-align: center;">
+            <thead>
+                <tr style="background-color: rgba(81, 103, 233, 0.7); color: #fff;">
+                    <th>Parameter</th>
+                    <th>AES</th>
+                    <th>RSA</th>
+                    <th>SHA-256</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Algorithm Type</td>
+                    <td>Symmetric Encryption</td>
+                    <td>Asymmetric Encryption</td>
+                    <td>Hash Function</td>
+                </tr>
+                <tr>
+                    <td>Key Usage</td>
+                    <td>Single Secret Key</td>
+                    <td>Public & Private Key Pair</td>
+                    <td>No Key Used</td>
+                </tr>
+                <tr>
+                    <td>Reversibility</td>
+                    <td>Reversible (Decryptable)</td>
+                    <td>Reversible (Decryptable)</td>
+                    <td>Irreversible</td>
+                </tr>
+                <tr>
+                    <td>Primary Purpose</td>
+                    <td>Data Confidentiality</td>
+                    <td>Secure Key Exchange & Authentication</td>
+                    <td>Data Integrity Verification</td>
+                </tr>
+                <tr>
+                    <td>Speed</td>
+                    <td>Very Fast</td>
+                    <td>Slower than AES</td>
+                    <td>Fast</td>
+                </tr>
+                <tr>
+                    <td>Security Level</td>
+                    <td>High (128/192/256-bit keys)</td>
+                    <td>High (Depends on key size)</td>
+                    <td>Very High</td>
+                </tr>
+                <tr>
+                    <td>Typical Applications</td>
+                    <td>Disk Encryption, VPNs</td>
+                    <td>SSL/TLS, Digital Signatures</td>
+                    <td>Password Hashing, Blockchain</td>
+                </tr>
+                <tr>
+                    <td>Example Output</td>
+                    <td>Ciphertext</td>
+                    <td>Ciphertext</td>
+                    <td>Fixed-Length Hash</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ================= SUMMARY ================= -->
+    <div class="card" style="margin-top: 30px;">
+        <h2>Summary</h2>
+        <p>
+            AES is best suited for encrypting large volumes of data due to its
+            speed and efficiency. RSA is primarily used for secure key exchange
+            and authentication rather than bulk data encryption. SHA-256 is a
+            one-way cryptographic hash function used to ensure data integrity
+            and security.
+        </p>
+    </div>
+
+    <!-- ================= BACK BUTTON ================= -->
+    <div style="text-align: center; margin-top: 40px;">
+        <a href="/" class="multi-text-btn blue">
+            ⬅ Back to Home
+        </a>
+    </div>
+
+</div>
+
+</body>
+</html>

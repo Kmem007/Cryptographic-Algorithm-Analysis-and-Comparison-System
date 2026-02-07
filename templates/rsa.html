@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RSA Encryption / Decryption</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container">
+
+    <h1>RSA Encryption / Decryption</h1>
+
+    <p class="intro-text">
+        RSA is an asymmetric encryption algorithm that uses a public key for
+        encryption and a private key for decryption.
+    </p>
+
+    <!-- INSTRUCTIONS -->
+    <div class="card">
+        <h2>How to Perform RSA Encryption and Decryption</h2>
+        <ol style="margin-left: 20px; font-size: 16px;">
+            <li>Enter the plaintext message or ciphertext.</li>
+            <li>Enter the <b>Public Key</b> to encrypt the message.</li>
+            <li>Enter the <b>Private Key</b> to decrypt the message.</li>
+            <li>Click Encrypt or Decrypt accordingly.</li>
+        </ol>
+    </div>
+
+    <!-- FORM -->
+    <div class="card" style="margin-top: 30px;">
+        <form method="POST">
+
+            <label>Enter Plain Text / Cipher Text:</label>
+            <textarea name="text" required></textarea>
+
+            <label>Enter Public Key (for Encryption):</label>
+            <textarea name="public_key" placeholder="Paste RSA Public Key here"></textarea>
+
+            <label>Enter Private Key (for Decryption):</label>
+            <textarea name="private_key" placeholder="Paste RSA Private Key here"></textarea>
+
+            <!-- BUTTONS (medium size) -->
+            <div style="display: flex; gap: 15px; margin-top: 15px;">
+                <button type="submit" name="action" value="encrypt" class="btn">
+                    Encrypt
+                </button>
+                <button type="submit" name="action" value="decrypt" class="btn">
+                    Decrypt
+                </button>
+            </div>
+
+        </form>
+
+        {% if result %}
+        <div class="result">
+            <b>Output Result</b>
+            <hr style="margin: 10px 0;">
+            {{ result }}
+        </div>
+        {% endif %}
+    </div>
+
+    <div style="text-align: center; margin-top: 40px;">
+        <a href="/demo" class="btn">⬅ Back to Demonstrations</a>
+    </div>
+
+</div>
+
+</body>
+</html>

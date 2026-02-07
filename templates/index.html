@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cryptographic Algorithms</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<!-- ===== FULL WIDTH CRYPTO SECTION ===== -->
+<div class="crypto-section">
+    <div class="crypto-overlay">
+        <div class="crypto-content">
+
+            <!-- HEADING WITH LEFT & RIGHT IMAGES -->
+            <div class="heading-wrapper">
+                <img src="{{ url_for('static', filename='images/lock.png') }}"
+                     alt="Lock Icon"
+                     class="heading-img">
+
+                <h1 class="hero-title">Cryptographic Algorithms</h1>
+
+                <img src="{{ url_for('static', filename='images/key.png') }}"
+                     alt="Key Icon"
+                     class="heading-img">
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ================= OVERVIEW ================= -->
+<div class="card">
+    <h2>Overview of Cryptographic Algorithms</h2>
+    <p>
+        Cryptographic algorithms are mathematical techniques used to protect
+        information from unauthorized access. These algorithms play a crucial
+        role in ensuring data confidentiality, integrity, authentication, and
+        non-repudiation in digital systems.
+    </p>
+    <p>
+        In today’s digital world, cryptography is widely used in applications
+        such as secure web communication (HTTPS), online banking, digital
+        signatures, password storage, and data encryption. By converting
+        readable information (plaintext) into an unreadable form (ciphertext),
+        cryptographic algorithms prevent attackers from accessing sensitive
+        data.
+    </p>
+</div>
+
+<!-- ================= TYPES ================= -->
+<div class="card" style="margin-top: 30px;">
+    <h2>Types of Cryptographic Algorithms</h2>
+    <p>
+        Cryptographic algorithms can be broadly classified into three major
+        categories based on their functionality and usage.
+    </p>
+
+    <h3>1. Symmetric Key Cryptography</h3>
+    <p>
+        Symmetric key cryptography uses the same secret key for both encryption
+        and decryption of data. These algorithms are computationally efficient
+        and are commonly used for encrypting large amounts of data.
+    </p>
+    <p>
+        <b>Example:</b> Advanced Encryption Standard (AES) is a widely used
+        symmetric encryption algorithm known for its high security and fast
+        performance.
+    </p>
+
+    <h3>2. Asymmetric Key Cryptography</h3>
+    <p>
+        Asymmetric key cryptography uses a pair of keys: a public key for
+        encryption and a private key for decryption. This approach enhances
+        security by eliminating the need to share secret keys.
+    </p>
+    <p>
+        <b>Example:</b> RSA is a popular asymmetric encryption algorithm widely
+        used for secure key exchange and digital signatures.
+    </p>
+
+    <h3>3. Hash Functions</h3>
+    <p>
+        Hash functions generate a fixed-length hash value from input data.
+        These algorithms are one-way functions, meaning the original data
+        cannot be retrieved from the hash.
+    </p>
+    <p>
+        <b>Example:</b> SHA-256 is a secure cryptographic hash function used for
+        data integrity verification and password hashing.
+    </p>
+</div>
+
+<!-- ================= BUTTON SECTION ================= -->
+<div class="card action-card">
+    <h2>Explore the Algorithms</h2>
+
+    <p class="action-text">
+        Use the buttons below to interactively demonstrate cryptographic
+        algorithms and analyze their behavior.
+    </p>
+
+    <a href="/demo" class="multi-text-btn blue">
+        <span>ALGORITHMS DemonstrationS</span>
+    </a>
+
+    <a href="/compare" class="multi-text-btn green">
+    <span>Comparative Analysis</span>
+    </a>
+
+
+    <a href="/about" class="multi-text-btn orange">
+        <span>About the Project</span>
+    </a>
+</div>
+
+
+
+</body>
+</html>

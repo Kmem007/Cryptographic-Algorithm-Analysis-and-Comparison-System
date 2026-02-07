@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cryptographic Algorithm Demonstrations</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container">
+
+    <!-- ================= HEADING ================= -->
+    <h1>Cryptographic Algorithm Demonstrations</h1>
+
+    <p class="intro-text">
+        This section demonstrates the working of cryptographic algorithms
+        through interactive encryption, decryption, and hashing operations.
+    </p>
+
+    <!-- ================= AES DEMO ================= -->
+    <div class="card">
+        <h2>AES – Advanced Encryption Standard</h2>
+        <p>
+            AES is a symmetric key encryption algorithm that uses the same
+            secret key for both encryption and decryption. It is widely used
+            for securing sensitive data due to its speed and high security.
+        </p>
+        <p>
+            In this demonstration, plaintext is encrypted using a secret key
+            and can be decrypted back to its original form.
+        </p>
+        <a href="/aes" class="btn">Perform AES Encryption / Decryption</a>
+    </div>
+
+    <!-- ================= RSA DEMO ================= -->
+    <div class="card" style="margin-top: 30px;">
+        <h2>RSA – Rivest Shamir Adleman</h2>
+        <p>
+            RSA is an asymmetric encryption algorithm that uses a public key
+            for encryption and a private key for decryption. It is commonly
+            used for secure key exchange and digital signatures.
+        </p>
+        <p>
+            In this demonstration, data is encrypted using the public key and
+            decrypted using the corresponding private key.
+        </p>
+        <a href="/rsa" class="btn">Perform RSA Encryption / Decryption</a>
+    </div>
+
+    <!-- ================= SHA DEMO ================= -->
+    <div class="card" style="margin-top: 30px;">
+        <h2>SHA-256 – Secure Hash Algorithm</h2>
+        <p>
+            SHA-256 is a cryptographic hash function that converts input data
+            into a fixed-length hash value. It is a one-way function and cannot
+            be reversed.
+        </p>
+        <p>
+            In this demonstration, the input message is hashed to generate a
+            unique hash used for integrity verification.
+        </p>
+        <a href="/sha" class="btn">Generate SHA-256 Hash</a>
+    </div>
+
+    <!-- ================= BACK BUTTON ================= -->
+    <div style="text-align: center; margin-top: 40px;">
+        <a href="/" class="btn">⬅ Back to Home</a>
+    </div>
+
+</div>
+
+</body>
+</html>

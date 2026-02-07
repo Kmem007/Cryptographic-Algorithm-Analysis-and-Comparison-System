@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SHA-256 Hashing</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container">
+
+    <h1>SHA-256 Hashing</h1>
+
+    <p class="intro-text">
+        SHA-256 is a cryptographic hash function that converts input data into
+        a fixed-length, irreversible hash value.
+    </p>
+
+    <!-- INSTRUCTIONS -->
+    <div class="card">
+        <h2>How to Generate SHA-256 Hash</h2>
+        <ol style="margin-left: 20px; font-size: 16px;">
+            <li>Enter the input message.</li>
+            <li>Click Generate Hash.</li>
+            <li>The hash value will be displayed as output.</li>
+        </ol>
+    </div>
+
+    <!-- FORM -->
+    <div class="card" style="margin-top: 30px;">
+        <form method="POST">
+
+            <label>Enter Message:</label>
+            <textarea name="text" required></textarea>
+
+            <!-- SMALL BUTTON -->
+            <button type="submit" class="btn" style="margin-top: 15px;">
+                Generate Hash
+            </button>
+
+        </form>
+
+        {% if result %}
+        <div class="result">
+            <b>Generated Hash</b>
+            <hr style="margin: 10px 0;">
+            {{ result }}
+        </div>
+        {% endif %}
+    </div>
+
+    <div style="text-align: center; margin-top: 40px;">
+        <a href="/demo" class="btn">⬅ Back to Demonstrations</a>
+    </div>
+
+</div>
+
+</body>
+</html>

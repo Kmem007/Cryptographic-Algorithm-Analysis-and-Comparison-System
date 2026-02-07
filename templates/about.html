@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>About the Project</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container">
+
+    <h1>About the Project</h1>
+
+    <!-- ================= PROJECT OVERVIEW ================= -->
+    <div class="card">
+        <h2>Project Overview</h2>
+        <p>
+            This project is a web-based demonstration of fundamental cryptographic
+            algorithms used in information security. The objective of this project
+            is to help users understand how different cryptographic techniques
+            protect data through encryption, decryption, and hashing.
+        </p>
+        <p>
+            The website provides both theoretical explanations and practical
+            demonstrations of cryptographic algorithms, making it suitable for
+            academic learning and experimentation.
+        </p>
+    </div>
+
+    <!-- ================= OBJECTIVES ================= -->
+    <div class="card" style="margin-top: 30px;">
+        <h2>Objectives of the Project</h2>
+        <ul style="margin-left: 20px; font-size: 16px;">
+            <li>To understand the working of symmetric and asymmetric cryptographic algorithms.</li>
+            <li>To demonstrate encryption and decryption using AES and RSA.</li>
+            <li>To explain one-way hashing using SHA-256.</li>
+            <li>To compare cryptographic algorithms based on their characteristics.</li>
+            <li>To provide an interactive and educational learning platform.</li>
+        </ul>
+    </div>
+
+    <!-- ================= ALGORITHMS ================= -->
+    <div class="card" style="margin-top: 30px;">
+        <h2>Algorithms Used</h2>
+
+        <h3>AES (Advanced Encryption Standard)</h3>
+        <p>
+         ~ AES is a symmetric key encryption algorithm used to secure sensitive
+            data. It uses the same secret key for encryption and decryption and
+            is known for its speed and high security.
+        </p>
+
+        <h3>RSA (Rivest-Shamir-Adleman)</h3>
+        <p>
+            ~ RSA is an asymmetric encryption algorithm that uses a public key
+            for encryption and a private key for decryption. It is widely used
+            for secure key exchange and digital signatures.
+        </p>
+
+        <h3>SHA-256 (Secure Hash Algorithm)</h3>
+        <p>
+            ~ SHA-256 is a cryptographic hash function that generates a fixed-length
+            hash value from input data. It is irreversible and ensures data
+            integrity.
+        </p>
+    </div>
+
+    <!-- ================= TECHNOLOGY STACK ================= -->
+    <div class="card" style="margin-top: 30px;">
+        <h2>Technology Stack</h2>
+        <ul style="margin-left: 20px; font-size: 16px;">
+            <li>Backend: Python (Flask Framework)</li>
+            <li>Frontend: HTML, CSS</li>
+            <li>Cryptographic Libraries: Python Cryptography Libraries</li>
+            <li>Development Environment: VS Code</li>
+        </ul>
+    </div>
+
+    <!-- ================= EDUCATIONAL VALUE ================= -->
+    <div class="card" style="margin-top: 30px;">
+        <h2>Educational Value</h2>
+        <p>
+            This project helps students visualize how cryptographic algorithms
+            work in practice. By combining theory with live demonstrations, it
+            bridges the gap between conceptual understanding and real-world
+            implementation of information security techniques.
+        </p>
+    </div>
+
+    <!-- ================= BACK BUTTON ================= -->
+    <div style="text-align: center; margin-top: 40px;">
+        <a href="/" class="btn">⬅ Back to Home</a>
+    </div>
+
+</div>
+
+</body>
+</html>
