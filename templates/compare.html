@@ -4,103 +4,292 @@
     <meta charset="UTF-8">
     <title>Comparative Analysis</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <style>
+        /* ── input box ── */
+        .bench-input {
+            width: 100%;
+            padding: 13px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(81,103,233,0.4);
+            font-size: 16px;
+            background: rgba(255,255,255,0.08);
+            color: white;
+            margin-bottom: 18px;
+            outline: none;
+        }
+        .bench-input:focus { border-color: #5167e9; }
+
+        /* ── results table ── */
+        .perf-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+            font-size: 17px;
+            margin-top: 28px;
+        }
+        .perf-table th {
+            background: rgba(81,103,233,0.85);
+            color: #fff;
+            padding: 14px 20px;
+            font-weight: 700;
+        }
+        .perf-table td {
+            border: 1px solid rgba(81,103,233,0.3);
+            padding: 13px 20px;
+            color: #e5e7eb;
+        }
+        .perf-table tr:nth-child(even) td {
+            background: rgba(81,103,233,0.08);
+        }
+        .perf-table .algo { font-weight: 700; color: #a5b4fc; }
+
+        /* ── chart wrapper ── */
+        .chart-box {
+            background: rgba(17,24,39,0.6);
+            border: 1px solid rgba(81,103,233,0.2);
+            border-radius: 18px;
+            padding: 24px 20px 16px;
+            margin-top: 32px;
+        }
+        .chart-box h3 {
+            text-align: center;
+            font-size: 17px;
+            font-weight: 700;
+            color: #a5b4fc;
+            margin-bottom: 16px;
+            letter-spacing: 0.5px;
+            text-transform: none;
+        }
+        .chart-box canvas { height: 280px !important; }
+
+        /* ── error ── */
+        .err {
+            background: rgba(220,38,38,0.15);
+            border: 1px solid rgba(220,38,38,0.45);
+            border-radius: 12px;
+            padding: 14px 20px;
+            color: #fca5a5;
+            margin-top: 16px;
+        }
+
+        /* ── section label ── */
+        .field-label {
+            display: block;
+            color: #a5b4fc;
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 8px;
+            text-align: left;
+        }
+    </style>
 </head>
 <body>
-
 <div class="container">
 
-    <!-- Heading -->
-    <h1>Comparative Analysis of Cryptographic Algorithms</h1>
+    <h1>Comparative Analysis</h1>
     <p class="intro-text">
-        This section provides a detailed comparison of AES, RSA, and SHA-256
-        based on their characteristics, security features, performance, and
-        real-world applications.
+        Compare AES, RSA, and SHA-256 on real text input —
+        measuring Speed (MB/s), Memory Consumption (MB), and Time Consumption (seconds),
+        just like performance research benchmarks.
     </p>
 
-    <!-- ================= TABLE ================= -->
-    <div class="card" style="overflow-x:auto; padding: 20px 30px;">
-        <table style="width:100%; border-collapse: collapse; text-align: center;">
+    <!-- ═══════════════════════════════════════════
+         SECTION 2 — CHARACTERISTICS TABLE
+    ═══════════════════════════════════════════ -->
+    <!-- ═══════════════════════════════════════════
+         SECTION 2 — CHARACTERISTICS TABLE
+    ═══════════════════════════════════════════ -->
+    <div class="card" style="margin-top:30px;">
+        <h2>⚡ Live Performance Comparison</h2>
+        <p style="margin-bottom:24px;">
+            Enter any text message below. The system will run AES encryption/decryption,
+            RSA encryption/decryption, and SHA-256 hashing on it — then display the
+            results as a table and three bar charts (Speed, Memory, Time).
+        </p>
+
+        <form method="POST">
+            <label class="field-label">Enter Text Message:</label>
+            <input type="text" name="text" class="bench-input"
+                   value="{{ text or '' }}"
+                   placeholder="e.g. The quick brown fox jumps over the lazy dog"
+                   required>
+            <div style="text-align:center;">
+                <button type="submit" class="btn"
+                        onclick="this.innerText='⏳ Running... please wait'">
+                    🚀 Run Benchmark
+                </button>
+            </div>
+        </form>
+
+        {% if error %}
+        <div class="err">{{ error }}</div>
+        {% endif %}
+
+        {% if perf %}
+
+        <!-- ── RESULTS TABLE (like paper Table 2) ── -->
+        <div style="overflow-x:auto; margin-top:10px;">
+            <table class="perf-table">
+                <thead>
+                    <tr>
+                        <th>Algorithm</th>
+                        <th>Speed (MB/s)</th>
+                        <th>Memory Consumption (MB)</th>
+                        <th>Time Consumption (seconds)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for algo, d in perf.items() %}
+                    <tr>
+                        <td class="algo">{{ algo }}</td>
+                        <td>{{ d.speed_mbs }}</td>
+                        <td>{{ d.memory_mb }}</td>
+                        <td>{{ d.time_sec }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ── CHART 1: Speed (green, like paper) ── -->
+        <div class="chart-box">
+            <h3>Algorithm Performance Comparison — Speed (MB/s)</h3>
+            <canvas id="speedChart"></canvas>
+        </div>
+
+        <!-- ── CHART 2: Memory (red, like paper) ── -->
+        <div class="chart-box">
+            <h3>Algorithm Performance Comparison — Memory Consumption (MB)</h3>
+            <canvas id="memChart"></canvas>
+        </div>
+
+        <!-- ── CHART 3: Time (blue, like paper) ── -->
+        <div class="chart-box">
+            <h3>Algorithm Performance Comparison — Time Consumption (seconds)</h3>
+            <canvas id="timeChart"></canvas>
+        </div>
+
+        <script>
+        // Data from server
+        const algos  = [{% for k in perf.keys() %}"{{ k }}",{% endfor %}];
+        const speeds = [{% for d in perf.values() %}{{ d.speed_mbs }},{% endfor %}];
+        const mems   = [{% for d in perf.values() %}{{ d.memory_mb }},{% endfor %}];
+        const times  = [{% for d in perf.values() %}{{ d.time_sec }},{% endfor %}];
+
+        const GRID  = 'rgba(255,255,255,0.05)';
+        const TICK  = '#9ca3af';
+
+        function makeChart(canvasId, values, label, unit, barColor) {
+            new Chart(document.getElementById(canvasId), {
+                type: 'bar',
+                data: {
+                    labels: algos,
+                    datasets: [{
+                        label: label,
+                        data: values,
+                        backgroundColor: barColor,
+                        borderColor: barColor,
+                        borderWidth: 0,
+                        borderRadius: 6,
+                        barPercentage: 0.5,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#e5e7eb', font: { size: 13 }, padding: 16 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => `  ${ctx.parsed.y} ${unit}`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: TICK, font: { size: 14, weight: '700' } },
+                            grid:  { color: GRID },
+                            title: {
+                                display: true,
+                                text: 'Algorithms',
+                                color: '#9ca3af',
+                                font: { size: 13 }
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: TICK,
+                                callback: v => v + ' ' + unit
+                            },
+                            grid: { color: GRID },
+                            title: {
+                                display: true,
+                                text: 'Metric Value',
+                                color: '#9ca3af',
+                                font: { size: 13 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Colours matching paper: green=speed, red=memory, blue=time
+        makeChart('speedChart', speeds, 'Speed (MB/s)',               'MB/s', 'rgba(34,197,94,0.80)');
+        makeChart('memChart',   mems,   'Memory Consumption (MB)',    'MB',   'rgba(239,68,68,0.80)');
+        makeChart('timeChart',  times,  'Time Consumption (seconds)', 's',    'rgba(81,103,233,0.85)');
+        </script>
+
+        {% endif %}
+    </div>
+
+    <div class="card" style="overflow-x:auto; padding:28px 36px;">
+        <h2>Algorithm Characteristics</h2>
+        <table style="width:100%;border-collapse:collapse;text-align:center;font-size:16px;">
             <thead>
-                <tr style="background-color: rgba(81, 103, 233, 0.7); color: #fff;">
-                    <th>Parameter</th>
-                    <th>AES</th>
-                    <th>RSA</th>
-                    <th>SHA-256</th>
+                <tr style="background:rgba(81,103,233,0.75);color:#fff;">
+                    <th style="padding:13px 16px;">Criteria</th>
+                    <th style="padding:13px 16px;">AES</th>
+                    <th style="padding:13px 16px;">RSA</th>
+                    <th style="padding:13px 16px;">SHA-256</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>Algorithm Type</td>
-                    <td>Symmetric Encryption</td>
-                    <td>Asymmetric Encryption</td>
-                    <td>Hash Function</td>
-                </tr>
-                <tr>
-                    <td>Key Usage</td>
-                    <td>Single Secret Key</td>
-                    <td>Public & Private Key Pair</td>
-                    <td>No Key Used</td>
-                </tr>
-                <tr>
-                    <td>Reversibility</td>
-                    <td>Reversible (Decryptable)</td>
-                    <td>Reversible (Decryptable)</td>
-                    <td>Irreversible</td>
-                </tr>
-                <tr>
-                    <td>Primary Purpose</td>
-                    <td>Data Confidentiality</td>
-                    <td>Secure Key Exchange & Authentication</td>
-                    <td>Data Integrity Verification</td>
-                </tr>
-                <tr>
-                    <td>Speed</td>
-                    <td>Very Fast</td>
-                    <td>Slower than AES</td>
-                    <td>Fast</td>
-                </tr>
-                <tr>
-                    <td>Security Level</td>
-                    <td>High (128/192/256-bit keys)</td>
-                    <td>High (Depends on key size)</td>
-                    <td>Very High</td>
-                </tr>
-                <tr>
-                    <td>Typical Applications</td>
-                    <td>Disk Encryption, VPNs</td>
-                    <td>SSL/TLS, Digital Signatures</td>
-                    <td>Password Hashing, Blockchain</td>
-                </tr>
-                <tr>
-                    <td>Example Output</td>
-                    <td>Ciphertext</td>
-                    <td>Ciphertext</td>
-                    <td>Fixed-Length Hash</td>
-                </tr>
+                <tr><td>Type</td><td>Symmetric</td><td>Asymmetric</td><td>Hash Function</td></tr>
+                <tr><td>Key Length</td><td>128 / 192 / 256 bits</td><td>Variable (512–4096 bits)</td><td>No key used</td></tr>
+                <tr><td>Reversibility</td><td>Reversible</td><td>Reversible</td><td>Irreversible</td></tr>
+                <tr><td>Encryption Speed</td><td>Very Fast</td><td>Slow for large data</td><td>Fast (one-way)</td></tr>
+                <tr><td>Security Strength</td><td>Highly Secure</td><td>Secure</td><td>Very High</td></tr>
+                <tr><td>Primary Purpose</td><td>Data Confidentiality</td><td>Key Exchange / Auth</td><td>Data Integrity</td></tr>
+                <tr><td>Common Usage</td><td>Disk Encryption, VPNs</td><td>SSL/TLS, Digital Signatures</td><td>Password Hashing, Blockchain</td></tr>
+                <tr><td>Algorithm Type</td><td>Block Cipher</td><td>Asymmetric Encryption</td><td>Cryptographic Hash</td></tr>
             </tbody>
         </table>
     </div>
 
-    <!-- ================= SUMMARY ================= -->
-    <div class="card" style="margin-top: 30px;">
+    <!-- ═══════════════════════════════════════════
+         SECTION 3 — SUMMARY
+    ═══════════════════════════════════════════ -->
+    <div class="card" style="margin-top:30px;">
         <h2>Summary</h2>
         <p>
-            AES is best suited for encrypting large volumes of data due to its
-            speed and efficiency. RSA is primarily used for secure key exchange
-            and authentication rather than bulk data encryption. SHA-256 is a
-            one-way cryptographic hash function used to ensure data integrity
-            and security.
+            AES is the fastest symmetric cipher for text encryption, with minimal memory usage
+            and very low time consumption. RSA is slower due to large-prime modular exponentiation,
+            but enables secure key exchange without a shared secret. SHA-256 is the fastest of the three
+            for text — it only hashes (no encryption), making it ideal for integrity checks and
+            password storage. These results are consistent with published research on symmetric vs.
+            asymmetric algorithm performance benchmarking.
         </p>
     </div>
 
-    <!-- ================= BACK BUTTON ================= -->
-    <div style="text-align: center; margin-top: 40px;">
-        <a href="/" class="multi-text-btn blue">
-            ⬅ Back to Home
-        </a>
+    <div style="text-align:center; margin-top:40px;">
+        <a href="/" class="multi-text-btn blue">⬅ Back to Home</a>
     </div>
 
 </div>
-
 </body>
 </html>

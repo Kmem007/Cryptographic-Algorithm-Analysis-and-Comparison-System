@@ -4,68 +4,442 @@
     <meta charset="UTF-8">
     <title>RSA Encryption / Decryption</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .intro-text { text-align:center; font-size:17px; color:#c7d2fe; margin-bottom:10px; }
+
+        /* ── 3-step flow indicator ── */
+        .flow-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            margin: 24px 0 30px;
+            flex-wrap: wrap;
+        }
+        .flow-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+        .flow-circle {
+            width: 48px; height: 48px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; font-weight: 800;
+            border: 2px solid rgba(81,103,233,0.4);
+            background: rgba(17,24,39,0.8);
+            color: #6b7280;
+            transition: all 0.3s;
+        }
+        .flow-circle.done  { background: rgba(16,185,129,0.2);  border-color: #10b981; color: #34d399; }
+        .flow-circle.active{ background: rgba(81,103,233,0.25); border-color: #5167e9; color: #a5b4fc; }
+        .flow-label { font-size: 12px; color: #6b7280; font-weight: 600; text-align:center; }
+        .flow-label.done   { color: #34d399; }
+        .flow-label.active { color: #a5b4fc; }
+        .flow-arrow { font-size: 20px; color: #374151; margin: 0 10px; padding-bottom: 22px; }
+
+        /* ── textarea & input ── */
+        .field-label { display:block; font-weight:600; font-size:15px; margin-bottom:6px; color:#a5b4fc; }
+        .text-input {
+            width:100%; padding:11px 14px; border-radius:10px;
+            border:1px solid rgba(81,103,233,0.3); font-size:15px;
+            margin-bottom:16px; background:rgba(255,255,255,0.07); color:white; outline:none;
+        }
+        .text-input:focus { border-color:#5167e9; }
+
+        /* ── result box ── */
+        .result-box {
+            background:rgba(33,40,88,0.5); border-radius:12px; padding:16px 20px;
+            margin:16px 0 6px; color:#e0e7ff; font-family:monospace; font-size:14px;
+            line-height:1.6; word-break:break-all; border:1px solid rgba(81,103,233,0.5);
+        }
+        .result-label { font-size:12px; color:#6b7280; margin-bottom:6px; font-family:sans-serif; }
+
+        /* ── key display card ── */
+        .key-card {
+            background:rgba(16,185,129,0.07); border:1px solid rgba(16,185,129,0.3);
+            border-radius:14px; padding:18px 20px; margin-top:16px;
+        }
+        .key-card-title { font-size:15px; font-weight:700; color:#34d399; margin-bottom:14px; }
+        .key-row { display:flex; gap:12px; margin-bottom:10px; flex-wrap:wrap; }
+        .key-box {
+            flex:1; min-width:200px; background:rgba(0,0,0,0.2);
+            border-radius:10px; padding:12px 14px;
+            border:1px solid rgba(16,185,129,0.2);
+        }
+        .key-box-label { font-size:11px; color:#6b7280; margin-bottom:4px; font-weight:700; text-transform:uppercase; }
+        .key-box-val { font-family:monospace; font-size:12px; color:#6ee7b7; word-break:break-all; }
+
+        /* ── visualization phases ── */
+        .viz-wrap { margin-top:28px; }
+        .viz-title { text-align:center; font-size:20px; font-weight:800; color:#a5b4fc; margin-bottom:22px; }
+
+        .phase {
+            border-radius:16px; padding:18px 22px; margin-bottom:8px;
+        }
+        .phase-key    { background:rgba(16,185,129,0.07);  border:1.5px solid rgba(16,185,129,0.3); }
+        .phase-enc    { background:rgba(99,102,241,0.08);  border:1.5px solid rgba(99,102,241,0.3); }
+        .phase-dec    { background:rgba(245,158,11,0.07);  border:1.5px solid rgba(245,158,11,0.3); }
+
+        .phase-header { display:flex; align-items:center; gap:14px; cursor:pointer; user-select:none; }
+        .phase-icon {
+            width:42px; height:42px; border-radius:11px;
+            display:flex; align-items:center; justify-content:center;
+            font-size:20px; flex-shrink:0;
+        }
+        .icon-key { background:rgba(16,185,129,0.2); }
+        .icon-enc { background:rgba(99,102,241,0.2); }
+        .icon-dec { background:rgba(245,158,11,0.2); }
+
+        .phase-name { font-size:16px; font-weight:800; }
+        .name-key { color:#34d399; }
+        .name-enc { color:#818cf8; }
+        .name-dec { color:#fbbf24; }
+        .phase-sub { font-size:12px; color:#6b7280; margin-top:2px; }
+
+        .chevron { font-size:16px; color:#4b5563; margin-left:auto; transition:transform 0.3s; }
+        .chevron.open { transform:rotate(180deg); }
+
+        .phase-body { display:none; margin-top:16px; }
+        .phase-body.open { display:block; }
+
+        .step-item {
+            display:flex; align-items:flex-start; gap:10px;
+            padding:10px 12px; border-radius:9px; margin-bottom:5px;
+            background:rgba(255,255,255,0.03);
+        }
+        .step-item:hover { background:rgba(255,255,255,0.055); }
+        .step-badge {
+            min-width:26px; height:26px; border-radius:7px;
+            display:flex; align-items:center; justify-content:center;
+            font-size:12px; font-weight:800; flex-shrink:0; margin-top:1px;
+        }
+        .badge-key { background:rgba(16,185,129,0.2); color:#6ee7b7; }
+        .badge-enc { background:rgba(99,102,241,0.2); color:#a5b4fc; }
+        .badge-dec { background:rgba(245,158,11,0.2); color:#fcd34d; }
+
+        .step-title { font-size:14px; font-weight:700; color:#e5e7eb; margin-bottom:2px; }
+        .step-desc  { font-size:13px; color:#94a3b8; line-height:1.55; }
+
+        .phase-arrow { text-align:center; font-size:20px; color:#374151; margin:4px 0; }
+
+        /* ── math formula box ── */
+        .formula-box {
+            background:rgba(0,0,0,0.25); border-radius:10px; padding:10px 16px;
+            margin:10px 0 4px; text-align:center; font-family:monospace;
+            font-size:15px; color:#c7d2fe; border:1px solid rgba(81,103,233,0.2);
+        }
+
+        /* ── error ── */
+        .err { background:rgba(220,38,38,0.15); border:1px solid rgba(220,38,38,0.4);
+               border-radius:12px; padding:14px 20px; color:#fca5a5; margin-top:14px; }
+
+        /* ── status bar ── */
+        .status-bar {
+            background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3);
+            border-radius:10px; padding:10px 16px; margin-top:16px;
+            font-size:13px; color:#6ee7b7; display:flex; align-items:center; gap:8px;
+        }
+    </style>
 </head>
 <body>
-
 <div class="container">
 
     <h1>RSA Encryption / Decryption</h1>
-
     <p class="intro-text">
-        RSA is an asymmetric encryption algorithm that uses a public key for
-        encryption and a private key for decryption.
+        RSA uses a <b>Public Key</b> to encrypt and a <b>Private Key</b> to decrypt.
+        Keys are generated from two large prime numbers p and q.
     </p>
 
-    <!-- INSTRUCTIONS -->
+    <!-- HOW TO USE -->
     <div class="card">
-        <h2>How to Perform RSA Encryption and Decryption</h2>
-        <ol style="margin-left: 20px; font-size: 16px;">
-            <li>Enter the plaintext message or ciphertext.</li>
-            <li>Enter the <b>Public Key</b> to encrypt the message.</li>
-            <li>Enter the <b>Private Key</b> to decrypt the message.</li>
-            <li>Click Encrypt or Decrypt accordingly.</li>
+        <h2>HOW TO USE</h2>
+
+        <!-- 3-step flow indicator -->
+        <div class="flow-bar">
+            <div class="flow-step">
+                <div class="flow-circle {% if action %}done{% endif %}">🔑</div>
+                <div class="flow-label {% if action %}done{% endif %}">Step 1<br>Generate Keys</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">
+                <div class="flow-circle {% if action == 'encrypt' or action == 'decrypt' %}done{% elif action == 'generate' %}active{% endif %}">🔒</div>
+                <div class="flow-label {% if action == 'encrypt' or action == 'decrypt' %}done{% elif action == 'generate' %}active{% endif %}">Step 2<br>Encrypt</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">
+                <div class="flow-circle {% if action == 'decrypt' %}done{% elif action == 'encrypt' %}active{% endif %}">🔓</div>
+                <div class="flow-label {% if action == 'decrypt' %}done{% elif action == 'encrypt' %}active{% endif %}">Step 3<br>Decrypt</div>
+            </div>
+        </div>
+
+        <ol style="margin-left:20px;font-size:15px;text-align:left;color:#c7d2fe;line-height:2.2;">
+            <li>Click <b>🔑 Generate Keys</b> — system creates a real RSA-512 key pair (p, q, n, e, d).</li>
+            <li>Type your message and click <b>🔒 Encrypt</b> — encrypted using the Public Key.</li>
+            <li>Click <b>🔓 Decrypt</b> — recovers original message using the Private Key. <span style="color:#fbbf24;">(No key input needed — RSA uses the generated private key automatically)</span></li>
         </ol>
     </div>
 
     <!-- FORM -->
-    <div class="card" style="margin-top: 30px;">
+    <div class="card" style="margin-top:30px;">
         <form method="POST">
+            <label class="field-label">
+                {% if action == 'encrypt' %}
+                    Enter message to encrypt:
+                {% elif action == 'decrypt' %}
+                    Ciphertext to decrypt (auto-filled from last encrypt):
+                {% else %}
+                    Enter your message:
+                {% endif %}
+            </label>
+            <textarea name="text" class="text-input" style="min-height:80px;resize:vertical;"
+                      placeholder="Type your message here...">{{ request.form.get('text','') }}</textarea>
 
-            <label>Enter Plain Text / Cipher Text:</label>
-            <textarea name="text" required></textarea>
-
-            <label>Enter Public Key (for Encryption):</label>
-            <textarea name="public_key" placeholder="Paste RSA Public Key here"></textarea>
-
-            <label>Enter Private Key (for Decryption):</label>
-            <textarea name="private_key" placeholder="Paste RSA Private Key here"></textarea>
-
-            <!-- BUTTONS (medium size) -->
-            <div style="display: flex; gap: 15px; margin-top: 15px;">
-                <button type="submit" name="action" value="encrypt" class="btn">
-                    Encrypt
+            <div style="display:flex;gap:12px;margin-top:4px;flex-wrap:wrap;justify-content:center;">
+                <button type="submit" name="action" value="generate" class="big-btn" style="background:#059669;">
+                    🔑 Generate Keys
                 </button>
-                <button type="submit" name="action" value="decrypt" class="btn">
-                    Decrypt
+                <button type="submit" name="action" value="encrypt" class="big-btn">
+                    🔒 Encrypt
+                </button>
+                <button type="submit" name="action" value="decrypt" class="big-btn" style="background:#b45309;">
+                    🔓 Decrypt
                 </button>
             </div>
-
         </form>
 
-        {% if result %}
-        <div class="result">
-            <b>Output Result</b>
-            <hr style="margin: 10px 0;">
+        {% if error %}<div class="err">{{ error }}</div>{% endif %}
+
+        <!-- ── KEY GENERATION RESULT ── -->
+        {% if action == 'generate' and keys %}
+        <div class="key-card">
+            <div class="key-card-title">✅ RSA Key Pair Generated Successfully</div>
+            <div class="key-row">
+                <div class="key-box">
+                    <div class="key-box-label">Prime p</div>
+                    <div class="key-box-val">{{ keys.p }}</div>
+                </div>
+                <div class="key-box">
+                    <div class="key-box-label">Prime q</div>
+                    <div class="key-box-val">{{ keys.q }}</div>
+                </div>
+            </div>
+            <div class="key-row">
+                <div class="key-box">
+                    <div class="key-box-label">🔓 Public Key — e (encryption exponent)</div>
+                    <div class="key-box-val">{{ keys.e }}</div>
+                </div>
+                <div class="key-box">
+                    <div class="key-box-label">🔒 Private Key — d (decryption exponent)</div>
+                    <div class="key-box-val">{{ keys.d }}</div>
+                </div>
+            </div>
+            <div class="key-row">
+                <div class="key-box" style="flex:2;">
+                    <div class="key-box-label">Modulus n = p × q</div>
+                    <div class="key-box-val">{{ keys.n }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="status-bar">✅ Keys stored in session — now type your message and click Encrypt</div>
+        {% endif %}
+
+        <!-- ── ENCRYPT / DECRYPT RESULT ── -->
+        {% if result and action != 'generate' %}
+        <div class="result-box">
+            <div class="result-label">
+                {{ "🔒 Encrypted Ciphertext (Public Key used)" if action == "encrypt" else "🔓 Decrypted Message (Private Key used)" }}
+            </div>
             {{ result }}
         </div>
+        {% if action == 'encrypt' %}
+        <div class="status-bar">✅ Ciphertext stored — click Decrypt to recover your message</div>
         {% endif %}
+        {% endif %}
+
+        <!-- ══════════════════════════════
+             VISUALIZATION
+        ══════════════════════════════ -->
+        {% if steps %}
+        <div class="viz-wrap">
+            <div class="viz-title">
+                {% if action == 'generate' %}🔐 RSA — Key Generation Process
+                {% elif action == 'encrypt' %}🔒 RSA — Encryption Process
+                {% else %}🔓 RSA — Decryption Process{% endif %}
+            </div>
+
+            <!-- KEY GENERATION VIZ -->
+            {% if action == 'generate' %}
+            <div class="phase phase-key">
+                <div class="phase-header" onclick="toggle('keygen')">
+                    <div class="phase-icon icon-key">🔑</div>
+                    <div>
+                        <div class="phase-name name-key">Key Generation — Step by Step</div>
+                        <div class="phase-sub">How RSA builds a public/private key pair from primes</div>
+                    </div>
+                    <div class="chevron open" id="chev-keygen">▼</div>
+                </div>
+                <div class="phase-body open" id="body-keygen">
+                    <div class="step-item">
+                        <div class="step-badge badge-key">1</div>
+                        <div>
+                            <div class="step-title">Choose Two Large Prime Numbers</div>
+                            <div class="step-desc">Select two distinct large prime numbers <b>p</b> and <b>q</b>. These must be kept secret — they are the foundation of RSA security.</div>
+                            <div class="formula-box">p = {{ keys.p if keys else '...' }}</div>
+                            <div class="formula-box">q = {{ keys.q if keys else '...' }}</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-badge badge-key">2</div>
+                        <div>
+                            <div class="step-title">Compute Modulus n = p × q</div>
+                            <div class="step-desc"><b>n</b> is the modulus used in both public and private keys. Its size determines the strength of RSA (512-bit here).</div>
+                            <div class="formula-box">n = p × q = {{ keys.n if keys else '...' }}</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-badge badge-key">3</div>
+                        <div>
+                            <div class="step-title">Compute Euler's Totient φ(n) = (p−1)(q−1)</div>
+                            <div class="step-desc">φ(n) counts integers less than n that are coprime to n. This is used to find the key exponents e and d.</div>
+                            <div class="formula-box">φ(n) = (p−1) × (q−1)</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-badge badge-key">4</div>
+                        <div>
+                            <div class="step-title">Choose Public Exponent e</div>
+                            <div class="step-desc"><b>e = 65537</b> is the standard public exponent. It must satisfy gcd(e, φ(n)) = 1 (coprime with φ(n)).</div>
+                            <div class="formula-box">e = 65537  |  gcd(e, φ(n)) = 1 ✅</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-badge badge-key">5</div>
+                        <div>
+                            <div class="step-title">Compute Private Exponent d = e⁻¹ mod φ(n)</div>
+                            <div class="step-desc"><b>d</b> is the modular inverse of e. It is mathematically impossible to derive d from e and n without knowing p and q — this is RSA's security guarantee.</div>
+                            <div class="formula-box">d = e⁻¹ mod φ(n)</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-badge badge-key">6</div>
+                        <div>
+                            <div class="step-title">✅ Keys Ready</div>
+                            <div class="step-desc">Public Key = (e, n) — share this with anyone.<br>Private Key = (d, n) — keep this secret always.</div>
+                            <div class="formula-box">Public Key = (e={{ keys.e if keys else '...' }}, n)</div>
+                            <div class="formula-box">Private Key = (d, n) — kept secret 🔒</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ENCRYPT VIZ -->
+            {% elif action == 'encrypt' %}
+            <div class="phase phase-enc">
+                <div class="phase-header" onclick="toggle('enc')">
+                    <div class="phase-icon icon-enc">🔒</div>
+                    <div>
+                        <div class="phase-name name-enc">Encryption — Step by Step</div>
+                        <div class="phase-sub">How the Public Key converts plaintext to ciphertext</div>
+                    </div>
+                    <div class="chevron open" id="chev-enc">▼</div>
+                </div>
+                <div class="phase-body open" id="body-enc">
+                    <div class="step-item">
+                        <div class="step-badge badge-enc">1</div>
+                        <div>
+                            <div class="step-title">Plaintext → Bytes</div>
+                            <div class="step-desc">Message converted to bytes using UTF-8 encoding. Split into chunks smaller than the key size.</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-badge badge-enc">2</div>
+                        <div>
+                            <div class="step-title">Convert to Integer M</div>
+                            <div class="step-desc">Each chunk of bytes is read as a large integer M. RSA performs math on integers, not text.</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-badge badge-enc">3</div>
+                        <div>
+                            <div class="step-title">Apply RSA Encryption Formula</div>
+                            <div class="step-desc">Each integer M is encrypted using the Public Key (e, n). The result C is the ciphertext integer.</div>
+                            <div class="formula-box">C = M<sup>e</sup> mod n</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-badge badge-enc">4</div>
+                        <div>
+                            <div class="step-title">✅ Ciphertext Encoded (Base64)</div>
+                            <div class="step-desc">Encrypted integers encoded to Base64 for safe text display. Without the private key d, decryption is computationally infeasible.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DECRYPT VIZ -->
+            {% elif action == 'decrypt' %}
+            <div class="phase phase-dec">
+                <div class="phase-header" onclick="toggle('dec')">
+                    <div class="phase-icon icon-dec">🔓</div>
+                    <div>
+                        <div class="phase-name name-dec">Decryption — Step by Step</div>
+                        <div class="phase-sub">How the Private Key recovers the original message</div>
+                    </div>
+                    <div class="chevron open" id="chev-dec">▼</div>
+                </div>
+                <div class="phase-body open" id="body-dec">
+                    <div class="step-item">
+                        <div class="step-badge badge-dec">1</div>
+                        <div>
+                            <div class="step-title">Ciphertext → Integers</div>
+                            <div class="step-desc">Base64 ciphertext is decoded back into the encrypted integers C that were produced during encryption.</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-badge badge-dec">2</div>
+                        <div>
+                            <div class="step-title">Apply RSA Decryption Formula</div>
+                            <div class="step-desc">Each integer C is decrypted using the Private Key (d, n). This works because of the mathematical relationship between e and d.</div>
+                            <div class="formula-box">M = C<sup>d</sup> mod n</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-badge badge-dec">3</div>
+                        <div>
+                            <div class="step-title">Why No Key Input Needed?</div>
+                            <div class="step-desc">The Private Key (d, n) was generated in Step 1 and is stored in the server session. RSA's private key is <b>never typed by the user</b> — it is always stored securely.</div>
+                            <div class="formula-box" style="color:#fcd34d;">Private Key auto-used from session 🔐</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-badge badge-dec">4</div>
+                        <div>
+                            <div class="step-title">✅ Original Message Recovered</div>
+                            <div class="step-desc">Decrypted integers converted back to bytes and then to the original text string. Decryption is only possible with the correct private key.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+        {% endif %}
+
     </div>
 
-    <div style="text-align: center; margin-top: 40px;">
+    <div style="text-align:center;margin-top:40px;">
         <a href="/demo" class="btn">⬅ Back to Demonstrations</a>
     </div>
-
 </div>
 
+<script>
+function toggle(id) {
+    const body = document.getElementById('body-' + id);
+    const chev = document.getElementById('chev-' + id);
+    if (body) body.classList.toggle('open');
+    if (chev) chev.classList.toggle('open');
+}
+</script>
 </body>
 </html>

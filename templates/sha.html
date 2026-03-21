@@ -4,56 +4,67 @@
     <meta charset="UTF-8">
     <title>SHA-256 Hashing</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .steps-box { margin-top: 24px; }
+        .step-item {
+            background: rgba(81,103,233,0.12);
+            border-left: 4px solid #5167e9;
+            border-radius: 8px;
+            padding: 10px 16px;
+            margin-bottom: 8px;
+            font-family: monospace;
+            font-size: 14px;
+            color: #c7d2fe;
+            word-break: break-all;
+        }
+        .step-title { color: #a5b4fc; font-size: 20px; font-weight: 700; margin-bottom: 12px; }
+    </style>
 </head>
 <body>
-
 <div class="container">
-
     <h1>SHA-256 Hashing</h1>
-
     <p class="intro-text">
-        SHA-256 is a cryptographic hash function that converts input data into
-        a fixed-length, irreversible hash value.
+        SHA-256 converts any input into a fixed 256-bit (64 hex character) hash.
+        It is a one-way function — the original data cannot be recovered from the hash.
     </p>
 
-    <!-- INSTRUCTIONS -->
     <div class="card">
         <h2>How to Generate SHA-256 Hash</h2>
-        <ol style="margin-left: 20px; font-size: 16px;">
-            <li>Enter the input message.</li>
-            <li>Click Generate Hash.</li>
-            <li>The hash value will be displayed as output.</li>
+        <ol style="margin-left:20px;font-size:16px;text-align:left;">
+            <li>Enter any message below.</li>
+            <li>Click <b>Generate Hash</b>.</li>
+            <li>See the 256-bit hash output and step-by-step process.</li>
         </ol>
     </div>
 
-    <!-- FORM -->
-    <div class="card" style="margin-top: 30px;">
+    <div class="card" style="margin-top:30px;">
         <form method="POST">
-
             <label>Enter Message:</label>
-            <textarea name="text" required></textarea>
-
-            <!-- SMALL BUTTON -->
-            <button type="submit" class="btn" style="margin-top: 15px;">
-                Generate Hash
-            </button>
-
+            <textarea name="text" required placeholder="Type any message...">{{ request.form.get('text','') }}</textarea>
+            <button type="submit" class="btn" style="margin-top:15px;">🔢 Generate Hash</button>
         </form>
 
         {% if result %}
         <div class="result">
-            <b>Generated Hash</b>
-            <hr style="margin: 10px 0;">
+            <b>✅ SHA-256 Hash (256 bits / 64 hex chars)</b>
+            <hr style="margin:10px 0;">
             {{ result }}
+        </div>
+        {% endif %}
+
+        {% if steps %}
+        <div class="steps-box">
+            <div class="step-title">📊 Step-by-Step SHA-256 Visualization</div>
+            {% for step in steps %}
+            <div class="step-item">{{ step }}</div>
+            {% endfor %}
         </div>
         {% endif %}
     </div>
 
-    <div style="text-align: center; margin-top: 40px;">
+    <div style="text-align:center;margin-top:40px;">
         <a href="/demo" class="btn">⬅ Back to Demonstrations</a>
     </div>
-
 </div>
-
 </body>
 </html>
